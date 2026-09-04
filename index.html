@@ -1,0 +1,1827 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, viewport-fit=cover">
+  <title>عيادات د. أسامة ماهر</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <!-- Flatpickr CSS (still needed for any future use, but we removed the picker) -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/themes/airbnb.css">
+  <style>
+    /* ============================================================
+       CUSTOM PROPERTIES
+       ============================================================ */
+    :root {
+      --bg: #eff6f5;
+      --surface: #ffffff;
+      --primary: #1f7a8c;
+      --primary-dark: #145864;
+      --primary-tint: #e3f1f2;
+      --accent: #f4a259;
+      --accent-tint: #fdecd8;
+      --text: #1b2b2e;
+      --muted: #5c7278;
+      --success: #4c9f70;
+      --success-tint: #e5f4ec;
+      --danger: #e2574c;
+      --danger-tint: #fbe7e5;
+      --border: #dce8e7;
+      --radius-lg: 20px;
+      --radius-md: 14px;
+      --radius-sm: 10px;
+    }
+
+    /* ============================================================
+       RESET & BASE
+       ============================================================ */
+    * {
+      box-sizing: border-box;
+    }
+    html,
+    body {
+      height: 100%;
+    }
+    body {
+      margin: 0;
+      font-family: 'Cairo', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      -webkit-font-smoothing: antialiased;
+    }
+    #app {
+      max-width: 480px;
+      margin: 0 auto;
+      min-height: 100vh;
+      background: var(--bg);
+      position: relative;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ============================================================
+       TOP BAR
+       ============================================================ */
+    .topbar {
+      background: var(--primary);
+      color: #fff;
+      padding: 18px 20px 16px;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      box-shadow: 0 2px 10px rgba(20, 88, 100, .15);
+    }
+    .topbar .row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .topbar .back {
+      background: rgba(255, 255, 255, .16);
+      border: none;
+      color: #fff;
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      font-size: 18px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .topbar h1 {
+      font-size: 16px;
+      margin: 0;
+      font-weight: 700;
+      line-height: 1.4;
+    }
+    .topbar .sub {
+      font-size: 12.5px;
+      opacity: .85;
+      margin-top: 2px;
+      font-weight: 500;
+    }
+    .content {
+      flex: 1;
+      padding: 18px 18px 100px;
+      overflow-y: auto;
+    }
+    .content.no-nav {
+      padding-bottom: 24px;
+    }
+
+    /* ============================================================
+       HERO / ROLE SELECT
+       ============================================================ */
+    .hero {
+      text-align: center;
+      padding: 38px 22px 26px;
+    }
+    .hero .badge {
+      width: 74px;
+      height: 74px;
+      border-radius: 22px;
+      background: var(--primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 18px;
+      font-size: 34px;
+      color: #fff;
+      box-shadow: 0 8px 20px rgba(31, 122, 140, .25);
+    }
+    .hero h1 {
+      font-size: 21px;
+      font-weight: 800;
+      margin: 0 0 6px;
+      color: var(--primary-dark);
+    }
+    .hero p {
+      font-size: 14px;
+      color: var(--muted);
+      margin: 0;
+      line-height: 1.6;
+    }
+    .role-list {
+      padding: 0 20px 30px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .role-btn {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 16px 18px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      cursor: pointer;
+      text-align: right;
+      transition: transform .12s ease, box-shadow .12s ease;
+      font-family: inherit;
+    }
+    .role-btn:active {
+      transform: scale(.98);
+    }
+    .role-btn .icon {
+      width: 46px;
+      height: 46px;
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      flex-shrink: 0;
+    }
+    .role-btn.patient .icon {
+      background: var(--accent-tint);
+    }
+    .role-btn.secretary .icon {
+      background: var(--primary-tint);
+    }
+    .role-btn.doctor .icon {
+      background: var(--success-tint);
+    }
+    .role-btn .txt strong {
+      display: block;
+      font-size: 15px;
+      margin-bottom: 2px;
+    }
+    .role-btn .txt span {
+      font-size: 12.5px;
+      color: var(--muted);
+    }
+    .role-btn .arrow {
+      margin-right: auto;
+      color: var(--muted);
+      font-size: 18px;
+    }
+
+    /* ============================================================
+       CARDS & FORMS
+       ============================================================ */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 16px;
+      margin-bottom: 14px;
+    }
+    .section-title {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--primary-dark);
+      margin: 4px 0 10px;
+    }
+    label {
+      display: block;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+    input,
+    textarea,
+    select {
+      width: 100%;
+      font-family: inherit;
+      font-size: 14.5px;
+      padding: 11px 13px;
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-sm);
+      background: #fbfdfd;
+      color: var(--text);
+      margin-bottom: 14px;
+    }
+    input:focus,
+    textarea:focus,
+    select:focus {
+      outline: 2px solid var(--primary);
+      outline-offset: 1px;
+      border-color: var(--primary);
+    }
+    input[readonly] {
+      background: #f0f0f0;
+      cursor: default;
+    }
+    textarea {
+      resize: vertical;
+      min-height: 70px;
+    }
+    .btn {
+      display: block;
+      width: 100%;
+      text-align: center;
+      padding: 13px 16px;
+      border: none;
+      border-radius: var(--radius-sm);
+      font-family: inherit;
+      font-size: 14.5px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .btn-primary {
+      background: var(--primary);
+      color: #fff;
+    }
+    .btn-primary:active {
+      background: var(--primary-dark);
+    }
+    .btn-accent {
+      background: var(--accent);
+      color: #3a2a12;
+    }
+    .btn-outline {
+      background: transparent;
+      color: var(--primary);
+      border: 1.5px solid var(--primary);
+    }
+    .btn-danger-outline {
+      background: transparent;
+      color: var(--danger);
+      border: 1.5px solid var(--danger);
+    }
+    .btn-row {
+      display: flex;
+      gap: 8px;
+      margin-top: 4px;
+    }
+    .btn-row .btn {
+      flex: 1;
+    }
+    .btn-sm {
+      padding: 9px 10px;
+      font-size: 13px;
+    }
+    .btn-xs {
+      padding: 4px 8px;
+      font-size: 11px;
+      width: auto;
+      display: inline-block;
+    }
+
+    .info-row {
+      display: flex;
+      gap: 12px;
+      padding: 12px 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .info-row:last-child {
+      border-bottom: none;
+    }
+    .info-row .ic {
+      font-size: 19px;
+      width: 26px;
+      text-align: center;
+      flex-shrink: 0;
+    }
+    .info-row .lbl {
+      font-size: 12px;
+      color: var(--muted);
+      margin-bottom: 2px;
+    }
+    .info-row .val {
+      font-size: 14.5px;
+      font-weight: 600;
+    }
+
+    .empty {
+      text-align: center;
+      padding: 34px 16px;
+      color: var(--muted);
+    }
+    .empty .ic {
+      font-size: 32px;
+      margin-bottom: 10px;
+    }
+    .empty p {
+      font-size: 13.5px;
+      margin: 0;
+      line-height: 1.6;
+    }
+
+    /* ============================================================
+       STATUS BADGES
+       ============================================================ */
+    .status-badge {
+      display: inline-block;
+      font-size: 11.5px;
+      font-weight: 700;
+      padding: 4px 10px;
+      border-radius: 100px;
+    }
+    .status-pending {
+      background: var(--accent-tint);
+      color: #95590f;
+    }
+    .status-confirmed {
+      background: var(--primary-tint);
+      color: var(--primary-dark);
+    }
+    .status-arrived {
+      background: var(--success-tint);
+      color: #2c6b47;
+    }
+    .status-cancelled {
+      background: var(--danger-tint);
+      color: #a33127;
+    }
+    .status-waiting {
+      background: var(--accent-tint);
+      color: #95590f;
+    }
+    .status-with_doctor {
+      background: var(--success-tint);
+      color: #2c6b47;
+    }
+    .status-done {
+      background: #eee;
+      color: #777;
+    }
+
+    /* ============================================================
+       BOOKING CARD
+       ============================================================ */
+    .booking-card {
+      border-right: 4px solid var(--accent);
+    }
+    .booking-card.st-confirmed {
+      border-right-color: var(--primary);
+    }
+    .booking-card.st-arrived {
+      border-right-color: var(--success);
+    }
+    .booking-card.st-cancelled {
+      border-right-color: var(--danger);
+      opacity: .7;
+    }
+    .bk-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 8px;
+    }
+    .bk-top strong {
+      font-size: 15px;
+    }
+    .bk-meta {
+      font-size: 12.5px;
+      color: var(--muted);
+      margin-bottom: 10px;
+      line-height: 1.7;
+    }
+    .bk-reason {
+      font-size: 13px;
+      background: var(--bg);
+      border-radius: var(--radius-sm);
+      padding: 9px 11px;
+      margin-bottom: 10px;
+    }
+
+    /* ============================================================
+       CONFIRM TIME ROW
+       ============================================================ */
+    .confirm-time-row {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      margin-top: 6px;
+    }
+    .confirm-time-row input[type="time"] {
+      flex: 1;
+      margin: 0;
+      padding: 8px;
+      font-size: 13px;
+    }
+    .confirm-time-row .pm-label {
+      font-size: 12px;
+      color: var(--muted);
+      white-space: nowrap;
+    }
+    .confirm-time-row button {
+      flex-shrink: 0;
+      width: auto;
+      padding: 8px 14px;
+      font-size: 13px;
+    }
+
+    /* ============================================================
+       ARRIVAL ROW
+       ============================================================ */
+    .arrival-row {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      margin-top: 6px;
+      flex-wrap: wrap;
+    }
+    .arrival-row select {
+      flex: 2;
+      min-width: 100px;
+      margin: 0;
+      padding: 8px;
+      font-size: 13px;
+    }
+    .arrival-row button {
+      flex: 1;
+      min-width: 80px;
+      padding: 8px 12px;
+      font-size: 13px;
+    }
+
+    /* ============================================================
+       SERVICE BADGE
+       ============================================================ */
+    .service-badge {
+      display: inline-block;
+      background: var(--primary-tint);
+      color: var(--primary-dark);
+      padding: 2px 10px;
+      border-radius: 12px;
+      font-size: 11px;
+      font-weight: 700;
+      margin-right: 6px;
+    }
+
+    /* ============================================================
+       QUEUE ITEMS (SECRETARY & DOCTOR)
+       ============================================================ */
+    .queue-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 13px 14px;
+      margin-bottom: 10px;
+      flex-wrap: wrap;
+    }
+    .queue-item .num {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: var(--primary-tint);
+      color: var(--primary-dark);
+      font-weight: 800;
+      font-size: 13.5px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .queue-item.current .num {
+      background: var(--success);
+      color: #fff;
+    }
+    .queue-item .qi-name {
+      font-size: 14.5px;
+      font-weight: 700;
+      flex: 1;
+    }
+    .queue-item .qi-time {
+      font-size: 12px;
+      color: var(--muted);
+    }
+    .queue-item .qi-actions {
+      display: flex;
+      gap: 6px;
+      align-items: center;
+      flex-wrap: wrap;
+      margin-top: 6px;
+      width: 100%;
+    }
+    .queue-item .qi-actions input[type="number"] {
+      width: 60px;
+      margin: 0;
+      padding: 4px;
+      font-size: 13px;
+      display: inline-block;
+    }
+    .queue-item .qi-actions .btn {
+      width: auto;
+      padding: 4px 10px;
+      font-size: 12px;
+    }
+    .qi-order-badge {
+      background: var(--primary);
+      color: #fff;
+      border-radius: 50%;
+      width: 28px;
+      height: 28px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 13px;
+      flex-shrink: 0;
+    }
+
+    /* ============================================================
+       CURRENT PATIENT (DOCTOR VIEW)
+       ============================================================ */
+    .current-patient {
+      background: linear-gradient(135deg, var(--success) 0%, #3d8a5e 100%);
+      color: #fff;
+      border-radius: var(--radius-lg);
+      padding: 20px;
+      margin-bottom: 16px;
+    }
+    .current-patient .tag {
+      font-size: 12px;
+      opacity: .85;
+      margin-bottom: 6px;
+      font-weight: 600;
+    }
+    .current-patient .name {
+      font-size: 19px;
+      font-weight: 800;
+      margin-bottom: 4px;
+    }
+    .current-patient .phone {
+      font-size: 13px;
+      opacity: .9;
+      margin-bottom: 6px;
+    }
+    .current-patient .service {
+      font-size: 13px;
+      opacity: .9;
+      margin-bottom: 10px;
+    }
+    .current-patient .order {
+      font-size: 15px;
+      font-weight: 700;
+      margin-bottom: 10px;
+    }
+
+    /* ============================================================
+       MESSAGES
+       ============================================================ */
+    .msg-bubble {
+      max-width: 80%;
+      padding: 10px 14px;
+      border-radius: 14px;
+      margin-bottom: 10px;
+      font-size: 13.5px;
+      line-height: 1.6;
+    }
+    .msg-from-secretary {
+      background: var(--primary-tint);
+      color: var(--primary-dark);
+      margin-left: auto;
+      border-bottom-left-radius: 4px;
+    }
+    .msg-from-doctor {
+      background: var(--success-tint);
+      color: #2c6b47;
+      margin-right: auto;
+      border-bottom-right-radius: 4px;
+    }
+    .msg-time {
+      font-size: 10.5px;
+      opacity: .65;
+      margin-top: 4px;
+      display: block;
+    }
+    .msg-input-row {
+      display: flex;
+      gap: 8px;
+      margin-top: 10px;
+    }
+    .msg-input-row textarea {
+      margin-bottom: 0;
+      min-height: 44px;
+    }
+    .msg-input-row button {
+      flex-shrink: 0;
+      width: 70px;
+    }
+
+    /* ============================================================
+       BOTTOM NAVIGATION
+       ============================================================ */
+    .bottom-nav {
+      position: sticky;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: var(--surface);
+      border-top: 1px solid var(--border);
+      display: flex;
+      padding: 6px 6px calc(6px + env(safe-area-inset-bottom));
+      z-index: 10;
+    }
+    .nav-btn {
+      flex: 1;
+      background: none;
+      border: none;
+      font-family: inherit;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 3px;
+      padding: 8px 4px;
+      cursor: pointer;
+      color: var(--muted);
+      border-radius: 12px;
+    }
+    .nav-btn .ic {
+      font-size: 19px;
+    }
+    .nav-btn .lb {
+      font-size: 10.5px;
+      font-weight: 700;
+    }
+    .nav-btn.active {
+      color: var(--primary);
+      background: var(--primary-tint);
+    }
+
+    /* ============================================================
+       PIN GATE
+       ============================================================ */
+    .pin-wrap {
+      padding: 50px 24px;
+      text-align: center;
+    }
+    .pin-wrap .ic {
+      font-size: 38px;
+      margin-bottom: 14px;
+    }
+    .pin-wrap h2 {
+      font-size: 17px;
+      margin: 0 0 6px;
+    }
+    .pin-wrap p {
+      font-size: 13px;
+      color: var(--muted);
+      margin: 0 0 22px;
+    }
+    .pin-wrap input {
+      text-align: center;
+      letter-spacing: 6px;
+      font-size: 20px;
+      font-weight: 700;
+    }
+    .error-txt {
+      color: var(--danger);
+      font-size: 12.5px;
+      margin: -8px 0 12px;
+      font-weight: 600;
+    }
+
+    /* ============================================================
+       TOAST
+       ============================================================ */
+    .toast {
+      position: fixed;
+      bottom: 90px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--text);
+      color: #fff;
+      padding: 11px 20px;
+      border-radius: 100px;
+      font-size: 13px;
+      font-weight: 600;
+      z-index: 50;
+      box-shadow: 0 6px 18px rgba(0, 0, 0, .2);
+      max-width: 85%;
+      text-align: center;
+    }
+    ::placeholder {
+      color: #a9b6b8;
+    }
+
+    /* ============================================================
+       CLINIC SELECTION GRID
+       ============================================================ */
+    .clinic-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+      padding: 0 20px 30px;
+    }
+    .clinic-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 20px 14px;
+      text-align: center;
+      cursor: pointer;
+      transition: all .1s;
+      font-family: inherit;
+    }
+    .clinic-card:active {
+      transform: scale(.97);
+    }
+    .clinic-card .ci {
+      font-size: 32px;
+      margin-bottom: 10px;
+    }
+    .clinic-card strong {
+      display: block;
+      font-size: 15px;
+      margin-bottom: 4px;
+    }
+    .clinic-card span {
+      font-size: 12.5px;
+      color: var(--muted);
+    }
+  </style>
+  <!-- Supabase JS -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2">
+  </script>
+  <!-- Flatpickr JS & Arabic locale (kept for possible future use, but not used) -->
+  <script src="https://cdn.jsdelivr.net/npm/flatpickr">
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/ar.js">
+  </script>
+</head>
+<body>
+  <div id="app"></div>
+  <script>
+    // ================================================================
+    //  CONFIGURATION
+    // ================================================================
+    const GROUP_NAME = 'عيادة الدكتور اسامة ماهر';
+
+    // ================================================================
+    //  UTILITY FUNCTIONS
+    // ================================================================
+
+    // Format 24h time to 12h with Arabic AM/PM
+    function formatTimeForDisplay(time24) {
+      if (!time24) return '';
+      const parts = time24.split(':');
+      let hour = parseInt(parts[0]);
+      const minute = parts[1] || '00';
+      const ampm = hour >= 12 ? 'م' : 'ص';
+      if (hour > 12) hour -= 12;
+      if (hour === 0) hour = 12;
+      return hour + ':' + minute + ' ' + ampm;
+    }
+
+    // Convert YYYY-MM-DD to DD/MM/YYYY
+    function formatDateDMY(iso) {
+      if (!iso) return '';
+      const parts = iso.split('-');
+      if (parts.length !== 3) return iso;
+      return parts[2] + '/' + parts[1] + '/' + parts[0];
+    }
+
+    // Get today's date as YYYY-MM-DD
+    function getTodayISO() {
+      const now = new Date();
+      const year = now.getFullYear();
+      const month = String(now.getMonth() + 1).padStart(2, '0');
+      const day = String(now.getDate()).padStart(2, '0');
+      return year + '-' + month + '-' + day;
+    }
+
+    // Get today's date as DD/MM/YYYY
+    function getTodayDMY() {
+      return formatDateDMY(getTodayISO());
+    }
+
+    // ================================================================
+    //  DATA LAYER (Supabase)
+    // ================================================================
+    const SUPABASE_URL = "https://zzycmfeftakjktxkgkkg.supabase.co";
+    const SUPABASE_ANON_KEY = "sb_publishable_8fi1wZhkoFI8I9iKmpvkHA_zlD0zSIS";
+    const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    function defaultSettings(clinicId) {
+      const nameMap = {
+        'clinic_1': 'عيادة فيصل',
+        'clinic_2': 'عيادة حدائق الهرام'
+      };
+      const addressMap = {
+        'clinic_1': 'جنديا مول الدور الثاني اداري',
+        'clinic_2': 'د شارع جاردينيا ١٩٧'
+      };
+      return {
+        clinic_id: clinicId,
+        name: nameMap[clinicId] || 'عيادة طب الأطفال',
+        address: addressMap[clinicId] || 'أدخل العنوان من الإعدادات',
+        phone: '01000000000',
+        hours: 'السبت - الخميس: 5 م - 10 م',
+        pin: '1234'
+      };
+    }
+
+    // Global data store
+    let DB = {
+      settings: {},
+      bookings: [],
+      queue: [],
+      messages: []
+    };
+    let dbReady = false;
+    let dbError = false;
+
+    // Load all data from Supabase
+    async function loadDB() {
+      try {
+        const [settingsRes, bookingsRes, queueRes, messagesRes] = await Promise.all([
+          sb.from('settings').select('*'),
+          sb.from('bookings').select('*'),
+          sb.from('queue').select('*'),
+          sb.from('messages').select('*')
+        ]);
+        if (settingsRes.error) throw settingsRes.error;
+        if (bookingsRes.error) throw bookingsRes.error;
+        if (queueRes.error) throw queueRes.error;
+        if (messagesRes.error) throw messagesRes.error;
+
+        DB.settings = {};
+        if (settingsRes.data && settingsRes.data.length) {
+          settingsRes.data.forEach(s => { DB.settings[s.clinic_id] = s; });
+        }
+        // Ensure clinic_1 and clinic_2 exist
+        ['clinic_1', 'clinic_2'].forEach(id => {
+          if (!DB.settings[id]) {
+            DB.settings[id] = defaultSettings(id);
+            sb.from('settings').upsert(DB.settings[id], { onConflict: 'clinic_id' }).then();
+          }
+        });
+
+        DB.bookings = bookingsRes.data || [];
+        DB.queue = queueRes.data || [];
+        DB.messages = messagesRes.data || [];
+        dbReady = true;
+        dbError = false;
+      } catch (e) {
+        console.error('Supabase load error:', e);
+        dbError = true;
+      }
+    }
+
+    // Subscribe to realtime changes
+    function subscribeRealtime() {
+      sb.channel('clinic-sync')
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'settings' }, onRemoteChange)
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'bookings' }, onRemoteChange)
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'queue' }, onRemoteChange)
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'messages' }, onRemoteChange)
+        .subscribe();
+    }
+    let remoteReloadTimer = null;
+
+    function onRemoteChange() {
+      clearTimeout(remoteReloadTimer);
+      remoteReloadTimer = setTimeout(async () => { await loadDB();
+        render(); }, 150);
+    }
+
+    function uid() { return Date.now().toString(36) + Math.random().toString(36).slice(2, 6); }
+
+    function fmtDate(d) {
+      if (!d) return '';
+      try {
+        const dt = new Date(d + 'T00:00:00');
+        return dt.toLocaleDateString('ar-EG', { weekday: 'long', day: 'numeric', month: 'long' });
+      } catch (e) { return d; }
+    }
+
+    const STATUS_LABELS = {
+      pending: 'قيد المراجعة',
+      confirmed: 'مؤكد',
+      arrived: 'وصل العيادة',
+      cancelled: 'ملغي',
+      waiting: 'في الانتظار',
+      with_doctor: 'مع الطبيب',
+      done: 'تم الكشف'
+    };
+
+    const SERVICE_TYPES = [
+      { value: 'كشف', label: 'كشف' },
+      { value: 'كشف مستعجل', label: 'كشف مستعجل' },
+      { value: 'استشارة', label: 'استشارة' },
+      { value: 'تحاليل', label: 'تحاليل' }
+    ];
+
+    // ================================================================
+    //  APPLICATION STATE
+    // ================================================================
+    let state = {
+      selectedClinic: null,
+      role: null,
+      tab: null,
+      secretaryAuthed: false,
+      doctorAuthed: false,
+      pinError: '',
+      patientPhoneSearch: ''
+    };
+
+    function getCurrentSettings() {
+      return DB.settings[state.selectedClinic] || defaultSettings(state.selectedClinic);
+    }
+
+    function getFilteredBookings() {
+      return DB.bookings.filter(b => b.clinic_id === state.selectedClinic);
+    }
+
+    function getFilteredQueue() {
+      return DB.queue.filter(q => q.clinic_id === state.selectedClinic);
+    }
+
+    function getFilteredMessages() {
+      return DB.messages.filter(m => m.clinic_id === state.selectedClinic);
+    }
+
+    function selectClinic(id) {
+      state.selectedClinic = id;
+      state.role = null;
+      state.tab = null;
+      state.secretaryAuthed = false;
+      state.doctorAuthed = false;
+      state.pinError = '';
+      render();
+    }
+
+    function goRole(role) {
+      state.role = role;
+      state.pinError = '';
+      if (role === 'patient') state.tab = 'info';
+      if (role === 'secretary') state.tab = 'bookings';
+      if (role === 'doctor') state.tab = 'queue';
+      render();
+    }
+
+    function goHome() {
+      state.role = null;
+      state.secretaryAuthed = false;
+      state.doctorAuthed = false;
+      render();
+    }
+
+    function setTab(t) { state.tab = t;
+      render(); }
+
+    function showToast(msg) {
+      const el = document.createElement('div');
+      el.className = 'toast';
+      el.textContent = msg;
+      document.body.appendChild(el);
+      setTimeout(() => el.remove(), 2200);
+    }
+
+    // ================================================================
+    //  RENDER ENGINE
+    // ================================================================
+    function render() {
+      const app = document.getElementById('app');
+
+      if (!state.selectedClinic) {
+        app.innerHTML = renderClinicSelect();
+        return;
+      }
+
+      if (!state.role) {
+        app.innerHTML = renderRoleSelect();
+        return;
+      }
+
+      if (state.role === 'secretary' && !state.secretaryAuthed) { app.innerHTML = renderPinGate('secretary'); return; }
+      if (state.role === 'doctor' && !state.doctorAuthed) { app.innerHTML = renderPinGate('doctor'); return; }
+
+      let topTitle = '',
+        topSub = '',
+        body = '',
+        nav = '';
+      const settings = getCurrentSettings();
+
+      if (state.role === 'patient') {
+        topTitle = settings.name;
+        topSub = 'بوابة الأهل';
+        if (state.tab === 'info') body = renderPatientInfo();
+        else if (state.tab === 'book') body = renderPatientBook();
+        else if (state.tab === 'waiting') body = renderPatientWaiting();
+        else body = renderPatientMine();
+        nav = renderNav([
+          { id: 'info', ic: '🏥', lb: 'العيادة' },
+          { id: 'book', ic: '📅', lb: 'حجز موعد' },
+          { id: 'waiting', ic: '⏳', lb: 'الانتظار' },
+          { id: 'mine', ic: '📋', lb: 'مواعيدي' }
+        ]);
+      } else if (state.role === 'secretary') {
+        topTitle = 'لوحة السكرتيرة';
+        topSub = settings.name;
+        body = state.tab === 'bookings' ? renderSecBookings() : state.tab === 'queue' ? renderSecQueue() : state.tab ===
+          'messages' ? renderMessages('secretary') : renderSecSettings();
+        nav = renderNav([
+          { id: 'bookings', ic: '🗂️', lb: 'الحجوزات' },
+          { id: 'queue', ic: '⏱️', lb: 'الانتظار' },
+          { id: 'messages', ic: '💬', lb: 'الطبيب' },
+          { id: 'settings', ic: '⚙️', lb: 'الإعدادات' }
+        ]);
+      } else if (state.role === 'doctor') {
+        topTitle = 'لوحة الطبيب';
+        topSub = settings.name;
+        body = state.tab === 'queue' ? renderDocQueue() : renderMessages('doctor');
+        nav = renderNav([
+          { id: 'queue', ic: '👨‍⚕️', lb: 'المرضى' },
+          { id: 'messages', ic: '💬', lb: 'السكرتيرة' }
+        ]);
+      }
+
+      app.innerHTML = `
+          <div class="topbar">
+            <div class="row">
+              <button class="back" onclick="goHome()">➜</button>
+              <div>
+                <h1>${topTitle}</h1>
+                <div class="sub">${topSub}</div>
+              </div>
+            </div>
+          </div>
+          <div class="content">${body}</div>
+          <div class="bottom-nav">${nav}</div>
+        `;
+    }
+
+    // ================================================================
+    //  CLINIC SELECTION
+    // ================================================================
+    function renderClinicSelect() {
+      const list = Object.values(DB.settings);
+      if (!list.length) {
+        return `<div class="empty" style="padding-top:80px;"><div class="ic">🏥</div><p>لا توجد عيادات مسجلة بعد</p></div>`;
+      }
+      return `
+          <div class="hero">
+            <div class="badge">🩺</div>
+            <h1>${GROUP_NAME}</h1>
+            <p>اختر الفرع الذي تريد متابعة شؤونه</p>
+          </div>
+          <div class="clinic-grid">
+            ${list.map(s => `
+              <button class="clinic-card" onclick="selectClinic('${s.clinic_id}')">
+                <div class="ci">🏛️</div>
+                <strong>${escapeHtml(s.name)}</strong>
+                <span>${escapeHtml(s.address)}</span>
+              </button>
+            `).join('')}
+          </div>
+        `;
+    }
+
+    // ================================================================
+    //  ROLE SELECTION
+    // ================================================================
+    function renderRoleSelect() {
+      const settings = getCurrentSettings();
+      return `
+          <div class="hero">
+            <div class="badge">🩺</div>
+            <h1>${settings.name}</h1>
+            <p>اختر الدخول المناسب لك للمتابعة</p>
+            <button class="btn btn-outline" style="margin-top:10px;display:inline-block;width:auto;padding:6px 16px;font-size:12px;" onclick="state.selectedClinic=null;render();">تغيير الفرع</button>
+          </div>
+          <div class="role-list">
+            <button class="role-btn patient" onclick="goRole('patient')">
+              <span class="icon">👨‍👩‍👧</span>
+              <span class="txt"><strong>ولي الأمر / المريض</strong><span>عرض معلومات العيادة وحجز موعد</span></span>
+              <span class="arrow">‹</span>
+            </button>
+            <button class="role-btn secretary" onclick="goRole('secretary')">
+              <span class="icon">🗂️</span>
+              <span class="txt"><strong>السكرتيرة</strong><span>إدارة الحجوزات وغرفة الانتظار</span></span>
+              <span class="arrow">‹</span>
+            </button>
+            <button class="role-btn doctor" onclick="goRole('doctor')">
+              <span class="icon">👨‍⚕️</span>
+              <span class="txt"><strong>الطبيب</strong><span>متابعة المرضى المتواجدين بالعيادة</span></span>
+              <span class="arrow">‹</span>
+            </button>
+          </div>
+        `;
+    }
+
+    // ================================================================
+    //  PIN GATE
+    // ================================================================
+    function renderPinGate(role) {
+      const label = role === 'secretary' ? 'السكرتيرة' : 'الطبيب';
+      return `
+          <div class="topbar">
+            <div class="row">
+              <button class="back" onclick="goHome()">➜</button>
+              <div><h1>دخول ${label}</h1></div>
+            </div>
+          </div>
+          <div class="content no-nav">
+            <div class="pin-wrap">
+              <div class="ic">🔒</div>
+              <h2>أدخل رمز الدخول</h2>
+              <p>هذا الرمز لحماية بيانات المرضى من الدخول غير المقصود على نفس الجهاز</p>
+              ${state.pinError ? `<div class="error-txt">${state.pinError}</div>` : ''}
+              <input id="pinInput" type="password" inputmode="numeric" maxlength="8" placeholder="••••" autofocus>
+              <button class="btn btn-primary" onclick="checkPin('${role}')">دخول</button>
+            </div>
+          </div>
+        `;
+    }
+
+    function checkPin(role) {
+      const val = document.getElementById('pinInput').value.trim();
+      const settings = getCurrentSettings();
+      if (val === (settings.pin || '1234')) {
+        if (role === 'secretary') state.secretaryAuthed = true;
+        else state.doctorAuthed = true;
+        state.pinError = '';
+      } else {
+        state.pinError = 'الرمز غير صحيح، حاول مرة أخرى';
+      }
+      render();
+    }
+
+    // ================================================================
+    //  PATIENT VIEWS
+    // ================================================================
+
+    // Clinic info
+    function renderPatientInfo() {
+      const s = getCurrentSettings();
+      return `
+          <div class="card">
+            <div class="section-title">معلومات العيادة</div>
+            <div class="info-row"><span class="ic">📍</span><div><div class="lbl">العنوان</div><div class="val">${escapeHtml(s.address)}</div></div></div>
+            <div class="info-row"><span class="ic">📞</span><div><div class="lbl">رقم الهاتف</div><div class="val">${escapeHtml(s.phone)}</div></div></div>
+            <div class="info-row"><span class="ic">🕐</span><div><div class="lbl">مواعيد العمل</div><div class="val">${escapeHtml(s.hours)}</div></div></div>
+          </div>
+          <div class="card" style="text-align:center;">
+            <div class="section-title" style="text-align:center;">جاهزون لاستقبال طفلك</div>
+            <p style="font-size:13px;color:var(--muted);margin:0 0 14px;line-height:1.7;">احجز موعدًا الآن وسنتواصل معك لتأكيده</p>
+            <button class="btn btn-accent" onclick="setTab('book')">احجز موعد الآن</button>
+          </div>
+        `;
+    }
+
+    // ================================================================
+    //  PATIENT BOOKING FORM (DATE FIXED TO TODAY)
+    // ================================================================
+    function renderPatientBook() {
+      const todayDMY = getTodayDMY();
+      return `
+          <div class="card">
+            <div class="section-title">بيانات الحجز</div>
+            <label>اسم الطفل</label>
+            <input id="fChild" placeholder="مثال: يوسف أحمد">
+            <label>اسم ولي الأمر</label>
+            <input id="fParent" placeholder="مثال: أحمد محمد">
+            <label>رقم الهاتف</label>
+            <input id="fPhone" type="tel" placeholder="01xxxxxxxxx">
+            <label>تاريخ اليوم</label>
+            <input id="fDate" type="text" value="${todayDMY}" readonly style="background:#f0f0f0;">
+            <label>سبب الزيارة (اختياري)</label>
+            <textarea id="fReason" placeholder="مثال: تطعيم، متابعة دورية، ارتفاع حرارة..."></textarea>
+            <p style="font-size:12px;color:var(--muted);margin:-8px 0 12px;">سيتم تحديد الوقت بعد تأكيد العيادة</p>
+            <button class="btn btn-primary" onclick="submitBooking()">إرسال طلب الحجز</button>
+          </div>
+        `;
+    }
+
+    // Submit booking (uses today's date)
+    async function submitBooking() {
+      const child = document.getElementById('fChild').value.trim();
+      const parent = document.getElementById('fParent').value.trim();
+      const phone = document.getElementById('fPhone').value.trim();
+      const reason = document.getElementById('fReason').value.trim();
+
+      if (!child || !phone) {
+        showToast('من فضلك أكمل اسم الطفل ورقم الهاتف');
+        return;
+      }
+
+      const todayISO = getTodayISO(); // YYYY-MM-DD
+
+      const row = {
+        id: uid(),
+        clinic_id: state.selectedClinic,
+        child,
+        parent,
+        phone,
+        date: todayISO,
+        time: '',
+        reason,
+        status: 'pending',
+        created_at: Date.now()
+      };
+      const { error } = await sb.from('bookings').insert(row);
+      if (error) { showToast('تعذر إرسال الحجز، تحقق من الاتصال');
+        console.error(error); return; }
+      DB.bookings.push(row);
+      state.patientPhoneSearch = phone;
+      showToast('تم إرسال طلب الحجز، بانتظار تأكيد العيادة');
+      setTab('mine');
+    }
+
+    // Patient's own bookings
+    function renderPatientMine() {
+      return `
+          <div class="card">
+            <div class="section-title">ابحث عن مواعيدك</div>
+            <label>رقم الهاتف المستخدم في الحجز</label>
+            <input id="searchPhone" type="tel" placeholder="01xxxxxxxxx" value="${escapeHtml(state.patientPhoneSearch || '')}">
+            <button class="btn btn-outline" onclick="searchMine()">بحث</button>
+          </div>
+          <div id="mineResults">${renderMineResults()}</div>
+        `;
+    }
+
+    function searchMine() {
+      state.patientPhoneSearch = document.getElementById('searchPhone').value.trim();
+      document.getElementById('mineResults').innerHTML = renderMineResults();
+    }
+
+    function renderMineResults() {
+      const phone = state.patientPhoneSearch;
+      if (!phone) return '';
+      const list = getFilteredBookings().filter(b => b.phone === phone).sort((a, b) => b.created_at - a.created_at);
+      if (!list.length) return `<div class="empty"><div class="ic">📭</div><p>لا توجد حجوزات بهذا الرقم بعد</p></div>`;
+      return list.map(b => {
+        const timeDisplay = b.time ? `🕐 ${formatTimeForDisplay(b.time)}` : '⏳ سيتم تحديد الوقت بعد التأكيد';
+        const dateDisplay = b.date ? formatDateDMY(b.date) : '';
+        return `
+            <div class="card booking-card st-${b.status}">
+              <div class="bk-top"><strong>${escapeHtml(b.child)}</strong><span class="status-badge status-${b.status}">${STATUS_LABELS[b.status]}</span></div>
+              <div class="bk-meta">📅 ${dateDisplay} — ${timeDisplay}</div>
+              ${b.reason ? `<div class="bk-reason">${escapeHtml(b.reason)}</div>` : ''}
+            </div>
+          `;
+      }).join('');
+    }
+
+    // ================================================================
+    //  PATIENT WAITING VIEW (shows order number & guardian)
+    // ================================================================
+    function renderPatientWaiting() {
+      const phone = state.patientPhoneSearch;
+      if (!phone) {
+        return `
+            <div class="card">
+              <p style="text-align:center;color:var(--muted);margin:0;">يرجى البحث عن مواعيدك أولاً باستخدام رقم الهاتف</p>
+            </div>
+          `;
+      }
+      const list = getFilteredQueue().filter(q => q.phone === phone && q.status !== 'done');
+      if (!list.length) {
+        return `
+            <div class="empty">
+              <div class="ic">✅</div>
+              <p>لا توجد مواعيد في الانتظار حالياً</p>
+            </div>
+          `;
+      }
+      return list.map(q => `
+          <div class="card">
+            <div class="bk-top">
+              <strong>${escapeHtml(q.name)}</strong>
+              <span class="status-badge status-${q.status}">${STATUS_LABELS[q.status]}</span>
+            </div>
+            ${q.guardian_name ? `<div class="bk-meta" style="font-size:13px;">ولي الأمر: ${escapeHtml(q.guardian_name)}</div>` : ''}
+            <div class="bk-meta" style="font-size:16px;font-weight:700;color:var(--primary-dark);">
+              رقم الدور: <span style="font-size:22px;background:var(--primary);color:#fff;padding:2px 14px;border-radius:8px;">${q.order_number || 'غير محدد'}</span>
+            </div>
+            ${q.service_type ? `<div class="bk-reason">نوع الخدمة: ${escapeHtml(q.service_type)}</div>` : ''}
+          </div>
+        `).join('');
+    }
+
+    // ================================================================
+    //  SECRETARY VIEWS
+    // ================================================================
+
+    // Bookings list with confirmation and arrival
+    function renderSecBookings() {
+      const list = getFilteredBookings().sort((a, b) => b.created_at - a.created_at);
+      if (!list.length) return `<div class="empty"><div class="ic">🗂️</div><p>لا توجد حجوزات حتى الآن</p></div>`;
+      return list.map(b => `
+          <div class="card booking-card st-${b.status}">
+            <div class="bk-top"><strong>${escapeHtml(b.child)}</strong><span class="status-badge status-${b.status}">${STATUS_LABELS[b.status]}</span></div>
+            <div class="bk-meta">👤 ولي الأمر: ${escapeHtml(b.parent || '—')} &nbsp;|&nbsp; 📞 ${escapeHtml(b.phone)}<br>📅 ${fmtDate(b.date)} ${b.time ? '— 🕐 '+formatTimeForDisplay(b.time) : ''}</div>
+            ${b.reason ? `<div class="bk-reason">${escapeHtml(b.reason)}</div>` : ''}
+            ${b.status === 'pending' ? `
+              <div class="confirm-time-row">
+                <input type="time" id="time_${b.id}" value="18:00" min="12:00" max="23:59" step="60">
+                <span class="pm-label">م</span>
+                <button class="btn btn-primary btn-sm" onclick="confirmBooking('${b.id}')">تأكيد</button>
+                <button class="btn btn-danger-outline btn-sm" onclick="setBookingStatus('${b.id}','cancelled')">إلغاء</button>
+              </div>
+            ` : ''}
+            ${b.status === 'confirmed' ? `
+              <div class="arrival-row">
+                <select id="service_${b.id}">
+                  ${SERVICE_TYPES.map(s => `<option value="${s.value}">${s.label}</option>`).join('')}
+                </select>
+                <button class="btn btn-accent btn-sm" onclick="markArrivedWithService('${b.id}')">تسجيل وصول</button>
+                <button class="btn btn-danger-outline btn-sm" onclick="setBookingStatus('${b.id}','cancelled')">إلغاء</button>
+              </div>
+            ` : ''}
+            ${b.status === 'arrived' ? `
+              <div style="margin-top:6px;font-size:13px;color:var(--muted);">
+                تم تسجيل الوصول — ${b.service_type ? '<span class="service-badge">'+escapeHtml(b.service_type)+'</span>' : ''}
+              </div>
+            ` : ''}
+          </div>
+        `).join('');
+    }
+
+    async function confirmBooking(id) {
+      const timeInput = document.getElementById('time_' + id);
+      if (!timeInput) return;
+      const time = timeInput.value;
+      if (!time) { showToast('يرجى اختيار وقت'); return; }
+      const b = DB.bookings.find(x => x.id === id);
+      if (!b) return;
+      const { error } = await sb.from('bookings').update({ status: 'confirmed', time: time }).eq('id', id);
+      if (error) { showToast('تعذر تأكيد الحجز');
+        console.error(error); return; }
+      b.status = 'confirmed';
+      b.time = time;
+      render();
+      showToast('تم تأكيد الحجز في الساعة ' + formatTimeForDisplay(time));
+    }
+
+    // ================================================================
+    //  GET NEXT ORDER NUMBER
+    // ================================================================
+    async function getNextOrderNumber(clinicId) {
+      const { data, error } = await sb
+        .from('queue')
+        .select('order_number')
+        .eq('clinic_id', clinicId)
+        .order('order_number', { ascending: false })
+        .limit(1);
+      if (error) {
+        console.error('Error getting next order number:', error);
+        return 1;
+      }
+      if (data.length === 0) return 1;
+      return data[0].order_number + 1;
+    }
+
+    // ================================================================
+    //  MARK ARRIVED WITH SERVICE (copies guardian)
+    // ================================================================
+    async function markArrivedWithService(id) {
+      const serviceSelect = document.getElementById('service_' + id);
+      if (!serviceSelect) return;
+      const serviceType = serviceSelect.value;
+      if (!serviceType) { showToast('يرجى اختيار نوع الخدمة'); return; }
+      const b = DB.bookings.find(x => x.id === id);
+      if (!b) return;
+
+      const nextOrder = await getNextOrderNumber(state.selectedClinic);
+
+      const queueRow = {
+        id: uid(),
+        clinic_id: state.selectedClinic,
+        name: b.child,
+        guardian_name: b.parent || '',
+        phone: b.phone,
+        arrived_at: Date.now(),
+        status: 'waiting',
+        booking_id: b.id,
+        service_type: serviceType,
+        order_number: nextOrder
+      };
+
+      const { error: e1 } = await sb.from('bookings').update({ status: 'arrived', service_type: serviceType }).eq('id', id);
+      if (e1) {
+        showToast('فشل تحديث الحجز: ' + e1.message);
+        console.error(e1);
+        return;
+      }
+      const { error: e2 } = await sb.from('queue').insert(queueRow);
+      if (e2) {
+        showToast('فشل إضافة المريض للانتظار: ' + e2.message);
+        console.error(e2);
+        return;
+      }
+
+      b.status = 'arrived';
+      b.service_type = serviceType;
+      DB.queue.push(queueRow);
+      showToast('تم تسجيل وصول ' + b.child + ' — ' + serviceType + ' (رقم ' + nextOrder + ')');
+      render();
+    }
+
+    // ================================================================
+    //  MOVE PATIENT UP / DOWN (swap order numbers)
+    // ================================================================
+    async function movePatient(id, direction) {
+      const queue = getFilteredQueue().filter(q => q.status === 'waiting' || q.status === 'with_doctor');
+      queue.sort((a, b) => (a.order_number || 999) - (b.order_number || 999));
+      const index = queue.findIndex(p => p.id === id);
+      if (index === -1) return;
+      const targetIndex = direction === 'up' ? index - 1 : index + 1;
+      if (targetIndex < 0 || targetIndex >= queue.length) return;
+
+      const patientA = queue[index];
+      const patientB = queue[targetIndex];
+
+      // Swap order numbers
+      const temp = patientA.order_number;
+      patientA.order_number = patientB.order_number;
+      patientB.order_number = temp;
+
+      // Update in Supabase
+      const { error: e1 } = await sb.from('queue').update({ order_number: patientA.order_number }).eq('id', patientA.id);
+      if (e1) { showToast('فشل التحديث: ' + e1.message);
+        console.error(e1); return; }
+      const { error: e2 } = await sb.from('queue').update({ order_number: patientB.order_number }).eq('id', patientB.id);
+      if (e2) { showToast('فشل التحديث: ' + e2.message);
+        console.error(e2); return; }
+
+      // Update local DB
+      const pA = DB.queue.find(p => p.id === patientA.id);
+      const pB = DB.queue.find(p => p.id === patientB.id);
+      if (pA) pA.order_number = patientA.order_number;
+      if (pB) pB.order_number = patientB.order_number;
+
+      render();
+      showToast(`تم نقل ${patientA.name} ${direction === 'up' ? 'لأعلى' : 'لأسفل'}`);
+    }
+
+    // ================================================================
+    //  RENUMBER ALL WAITING PATIENTS (after finish or delete)
+    // ================================================================
+    async function renumberQueue(clinicId) {
+      const waiting = getFilteredQueue().filter(q => q.status !== 'done').sort((a, b) => (a.order_number || 999) - (b
+      .order_number || 999));
+      let currentNumber = 1;
+      for (const p of waiting) {
+        if (p.order_number !== currentNumber) {
+          p.order_number = currentNumber;
+          const { error } = await sb.from('queue').update({ order_number: currentNumber }).eq('id', p.id);
+          if (error) { console.error('Renumber error:', error); }
+        }
+        currentNumber++;
+      }
+      // Update local DB
+      for (const p of waiting) {
+        const local = DB.queue.find(q => q.id === p.id);
+        if (local) local.order_number = p.order_number;
+      }
+    }
+
+    // ================================================================
+    //  DELETE PATIENT (with renumber)
+    // ================================================================
+    async function deletePatient(id) {
+      if (!confirm('⚠️ هل أنت متأكد من حذف هذا المريض من قائمة الانتظار؟\nلا يمكن التراجع عن هذا الإجراء.')) return;
+
+      const { error } = await sb.from('queue').delete().eq('id', id);
+      if (error) {
+        showToast('فشل الحذف: ' + error.message);
+        console.error(error);
+        return;
+      }
+      DB.queue = DB.queue.filter(p => p.id !== id);
+      await renumberQueue(state.selectedClinic);
+      render();
+      showToast('تم حذف المريض وإعادة ترقيم الباقين');
+    }
+
+    // ================================================================
+    //  FINISH PATIENT (with renumber)
+    // ================================================================
+    async function finishPatient(id) {
+      const q = DB.queue.find(x => x.id === id);
+      if (!q) return;
+      const { error } = await sb.from('queue').update({ status: 'done' }).eq('id', id);
+      if (error) { showToast('تعذر إنهاء الكشف');
+        console.error(error); return; }
+      q.status = 'done';
+      await renumberQueue(state.selectedClinic);
+      render();
+      showToast('تم إنهاء الكشف وإعادة ترقيم الباقين');
+    }
+
+    // ================================================================
+    //  SET BOOKING STATUS (CANCEL)
+    // ================================================================
+    async function setBookingStatus(id, status) {
+      const b = DB.bookings.find(x => x.id === id);
+      if (!b) return;
+      const { error } = await sb.from('bookings').update({ status }).eq('id', id);
+      if (error) { showToast('تعذر تحديث الحالة');
+        console.error(error); return; }
+      b.status = status;
+      render();
+    }
+
+    // ================================================================
+    //  SECRETARY QUEUE (with guardian, up/down, delete)
+    // ================================================================
+    function renderSecQueue() {
+      const waiting = getFilteredQueue().filter(q => q.status !== 'done').sort((a, b) => (a.order_number || 999) - (b
+      .order_number || 999));
+      return `
+          <div class="card">
+            <div class="section-title">إضافة مريض مباشر (بدون حجز مسبق)</div>
+            <label>اسم الطفل</label>
+            <input id="wChild" placeholder="اسم الطفل">
+            <label>اسم ولي الأمر</label>
+            <input id="wGuardian" placeholder="اسم ولي الأمر">
+            <label>رقم الهاتف (اختياري)</label>
+            <input id="wPhone" type="tel" placeholder="01xxxxxxxxx">
+            <label>نوع الخدمة</label>
+            <select id="wService">
+              ${SERVICE_TYPES.map(s => `<option value="${s.value}">${s.label}</option>`).join('')}
+            </select>
+            <button class="btn btn-primary" onclick="addWalkIn()">إضافة لغرفة الانتظار</button>
+          </div>
+          <div class="section-title">غرفة الانتظار الآن (${waiting.length})</div>
+          ${waiting.length ? waiting.map((q, i) => {
+            const isFirst = i === 0;
+            const isLast = i === waiting.length - 1;
+            return `
+              <div class="queue-item ${q.status === 'with_doctor' ? 'current' : ''}">
+                <div class="num">${i + 1}</div>
+                <div style="flex:1;">
+                  <div class="qi-name">${escapeHtml(q.name)} ${q.service_type ? '<span class="service-badge">'+escapeHtml(q.service_type)+'</span>' : ''}</div>
+                  ${q.guardian_name ? `<div class="qi-time" style="font-weight:500;">ولي الأمر: ${escapeHtml(q.guardian_name)}</div>` : ''}
+                  <div class="qi-time">${q.phone ? ('📞 ' + escapeHtml(q.phone) + ' — ') : ''}<span class="status-badge status-${q.status}">${STATUS_LABELS[q.status]}</span></div>
+                  <div style="margin-top:4px;font-size:13px;font-weight:700;color:var(--primary-dark);">
+                    رقم الدور: ${q.order_number ? '<span style="background:var(--primary);color:#fff;padding:2px 8px;border-radius:4px;">'+q.order_number+'</span>' : 'غير محدد'}
+                  </div>
+                  <div class="qi-actions">
+                    <button class="btn btn-outline btn-xs" onclick="movePatient('${q.id}','up')" ${isFirst ? 'disabled style="opacity:0.5;"' : ''}>⬆</button>
+                    <button class="btn btn-outline btn-xs" onclick="movePatient('${q.id}','down')" ${isLast ? 'disabled style="opacity:0.5;"' : ''}>⬇</button>
+                    <button class="btn btn-danger-outline btn-xs" onclick="deletePatient('${q.id}')">✕ حذف</button>
+                  </div>
+                </div>
+              </div>
+            `;
+          }).join('') : `<div class="empty"><div class="ic">⏱️</div><p>لا يوجد أطفال في الانتظار حاليًا</p></div>`}
+        `;
+    }
+
+    // ================================================================
+    //  ADD WALK-IN (with guardian)
+    // ================================================================
+    async function addWalkIn() {
+      const name = document.getElementById('wChild').value.trim();
+      const guardian = document.getElementById('wGuardian').value.trim();
+      const phone = document.getElementById('wPhone').value.trim();
+      const serviceType = document.getElementById('wService').value;
+      if (!name) { showToast('أدخل اسم الطفل أولاً'); return; }
+
+      const nextOrder = await getNextOrderNumber(state.selectedClinic);
+
+      const row = {
+        id: uid(),
+        clinic_id: state.selectedClinic,
+        name,
+        guardian_name: guardian,
+        phone,
+        arrived_at: Date.now(),
+        status: 'waiting',
+        service_type: serviceType,
+        order_number: nextOrder
+      };
+      const { error } = await sb.from('queue').insert(row);
+      if (error) { showToast('تعذر الإضافة لغرفة الانتظار');
+        console.error(error); return; }
+      DB.queue.push(row);
+      render();
+      showToast('تمت الإضافة لغرفة الانتظار — ' + serviceType + ' (رقم ' + nextOrder + ')');
+    }
+
+    // ================================================================
+    //  SETTINGS (unchanged)
+    // ================================================================
+    function renderSecSettings() {
+      const s = getCurrentSettings();
+      return `
+          <div class="card">
+            <div class="section-title">بيانات العيادة (تظهر للأهالي)</div>
+            <label>اسم العيادة</label>
+            <input id="sName" value="${escapeHtml(s.name)}">
+            <label>العنوان</label>
+            <input id="sAddress" value="${escapeHtml(s.address)}">
+            <label>رقم الهاتف</label>
+            <input id="sPhone" value="${escapeHtml(s.phone)}">
+            <label>مواعيد العمل</label>
+            <input id="sHours" value="${escapeHtml(s.hours)}">
+            <label>رمز الدخول (PIN) للسكرتيرة والطبيب</label>
+            <input id="sPin" value="${escapeHtml(s.pin)}" inputmode="numeric" maxlength="8">
+            <button class="btn btn-primary" onclick="saveSettings()">حفظ التعديلات</button>
+          </div>
+        `;
+    }
+
+    async function saveSettings() {
+      const clinicId = state.selectedClinic;
+      const updated = {
+        clinic_id: clinicId,
+        name: document.getElementById('sName').value.trim() || 'عيادة طب الأطفال',
+        address: document.getElementById('sAddress').value.trim(),
+        phone: document.getElementById('sPhone').value.trim(),
+        hours: document.getElementById('sHours').value.trim(),
+        pin: document.getElementById('sPin').value.trim() || '1234'
+      };
+      const { error } = await sb.from('settings').upsert(updated, { onConflict: 'clinic_id' });
+      if (error) { showToast('تعذر حفظ الإعدادات');
+        console.error(error); return; }
+      DB.settings[clinicId] = updated;
+      showToast('تم حفظ الإعدادات');
+      render();
+    }
+
+    // ================================================================
+    //  DOCTOR VIEWS (shows guardian)
+    // ================================================================
+    function renderDocQueue() {
+      const queue = getFilteredQueue();
+      const current = queue.find(q => q.status === 'with_doctor');
+      const waiting = queue.filter(q => q.status === 'waiting').sort((a, b) => (a.order_number || 999) - (b.order_number ||
+        999));
+      let html = '';
+      if (current) {
+        html += `
+            <div class="current-patient">
+              <div class="tag">المريض الحالي</div>
+              <div class="name">${escapeHtml(current.name)}</div>
+              ${current.guardian_name ? `<div class="phone">ولي الأمر: ${escapeHtml(current.guardian_name)}</div>` : ''}
+              <div class="phone">${current.phone ? ('📞 ' + escapeHtml(current.phone)) : 'بدون رقم هاتف'}</div>
+              <div class="order">رقم الدور: <span style="background:#fff;color:var(--primary-dark);padding:2px 12px;border-radius:6px;font-size:22px;">${current.order_number || '—'}</span></div>
+              <div class="service">نوع الخدمة: ${current.service_type ? '<span style="background:#fff;color:var(--primary-dark);padding:2px 10px;border-radius:12px;font-weight:700;">'+escapeHtml(current.service_type)+'</span>' : 'غير محدد'}</div>
+              <button class="btn" style="background:#fff;color:var(--success);" onclick="finishPatient('${current.id}')">إنهاء الكشف</button>
+            </div>
+          `;
+      } else if (waiting.length) {
+        html += `
+            <div class="card" style="text-align:center;">
+              <div class="section-title" style="text-align:center;">لا يوجد مريض حاليًا مع الطبيب</div>
+              <button class="btn btn-accent" onclick="callNext()">استدعاء التالي: ${escapeHtml(waiting[0].name)} (رقم ${escapeHtml(waiting[0].order_number || '—')})</button>
+            </div>
+          `;
+      } else {
+        html += `<div class="empty"><div class="ic">✅</div><p>لا يوجد مرضى في الانتظار</p></div>`;
+      }
+      if (waiting.length || current) {
+        html += `<div class="section-title">قائمة الانتظار (${waiting.length})</div>`;
+        html += waiting.map((q, i) => `
+            <div class="queue-item">
+              <div class="num">${i + 1}</div>
+              <div style="flex:1;">
+                <div class="qi-name">${escapeHtml(q.name)} ${q.service_type ? '<span class="service-badge">'+escapeHtml(q.service_type)+'</span>' : ''}</div>
+                ${q.guardian_name ? `<div class="qi-time">ولي الأمر: ${escapeHtml(q.guardian_name)}</div>` : ''}
+                <div class="qi-time">رقم الدور: <strong>${q.order_number || '—'}</strong>  —  ${q.phone ? ('📞 ' + escapeHtml(q.phone)) : 'بدون رقم'}</div>
+              </div>
+            </div>
+          `).join('');
+      }
+      return html;
+    }
+
+    // ================================================================
+    //  CALL NEXT (uses the updated order numbers)
+    // ================================================================
+    async function callNext() {
+      const queue = getFilteredQueue();
+      const waiting = queue.filter(q => q.status === 'waiting').sort((a, b) => (a.order_number || 999) - (b.order_number ||
+        999));
+      if (!waiting.length) return;
+      const { error } = await sb.from('queue').update({ status: 'with_doctor' }).eq('id', waiting[0].id);
+      if (error) { showToast('تعذر الاستدعاء');
+        console.error(error); return; }
+      waiting[0].status = 'with_doctor';
+      render();
+    }
+
+    // ================================================================
+    //  MESSAGES (unchanged)
+    // ================================================================
+    function renderMessages(who) {
+      const list = getFilteredMessages().sort((a, b) => a.time - b.time);
+      const otherLabel = who === 'secretary' ? 'الطبيب' : 'السكرتيرة';
+      return `
+          <div class="card" style="min-height:200px;">
+            <div class="section-title">محادثة مع ${otherLabel}</div>
+            ${list.length ? list.map(m => `
+                <div class="msg-bubble msg-from-${m.sender}">
+                  ${escapeHtml(m.text)}
+                  <span class="msg-time">${new Date(m.time).toLocaleString('ar-EG', { hour: '2-digit', minute: '2-digit', day: 'numeric', month: 'short' })}</span>
+                </div>
+              `).join('') : `<div class="empty"><div class="ic">💬</div><p>لا توجد رسائل بعد</p></div>`}
+            <div class="msg-input-row">
+              <textarea id="msgInput" placeholder="اكتب رسالة..."></textarea>
+              <button class="btn btn-primary" onclick="sendMsg('${who}')">إرسال</button>
+            </div>
+          </div>
+        `;
+    }
+
+    async function sendMsg(who) {
+      const el = document.getElementById('msgInput');
+      const text = el.value.trim();
+      if (!text) return;
+      const row = {
+        id: uid(),
+        clinic_id: state.selectedClinic,
+        sender: who,
+        text,
+        time: Date.now()
+      };
+      const { error } = await sb.from('messages').insert(row);
+      if (error) { showToast('تعذر إرسال الرسالة');
+        console.error(error); return; }
+      DB.messages.push(row);
+      render();
+      setTimeout(() => { const c = document.querySelector('.content'); if (c) c.scrollTop = c.scrollHeight; }, 30);
+    }
+
+    // ================================================================
+    //  HELPERS
+    // ================================================================
+    function renderNav(items) {
+      return items.map(it => `
+          <button class="nav-btn ${state.tab === it.id ? 'active' : ''}" onclick="setTab('${it.id}')">
+            <span class="ic">${it.ic}</span><span class="lb">${it.lb}</span>
+          </button>
+        `).join('');
+    }
+
+    function escapeHtml(str) {
+      if (str === undefined || str === null) return '';
+      return String(str).replace(/[&<>"']/g, s => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' } [
+        s
+      ]));
+    }
+
+    // ================================================================
+    //  INIT
+    // ================================================================
+    async function initApp() {
+      const app = document.getElementById('app');
+      app.innerHTML =
+        `<div class="empty" style="padding-top:80px;"><div class="ic">⏳</div><p>جاري تحميل بيانات العيادات...</p></div>`;
+      await loadDB();
+      if (dbError) {
+        app.innerHTML =
+          `<div class="empty" style="padding-top:80px;"><div class="ic">⚠️</div><p>تعذر الاتصال بقاعدة البيانات.<br>تأكد من ضبط SUPABASE_URL و SUPABASE_ANON_KEY في الملف، ومن اتصال الإنترنت.</p></div>`;
+        return;
+      }
+      subscribeRealtime();
+      const keys = Object.keys(DB.settings);
+      if (keys.length === 1) {
+        state.selectedClinic = keys[0];
+      } else {
+        state.selectedClinic = null;
+      }
+      render();
+    }
+    initApp();
+  </script>
+</body>
+</html>
