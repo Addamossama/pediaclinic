@@ -43,6 +43,7 @@
     html,
     body {
       height: 100%;
+      overflow: hidden;
     }
     body {
       margin: 0;
@@ -54,11 +55,13 @@
     #app {
       max-width: 480px;
       margin: 0 auto;
-      min-height: 100vh;
+      height: 100vh;
+      height: 100dvh;
       background: var(--bg);
       position: relative;
       display: flex;
       flex-direction: column;
+      overflow-y: auto;
     }
 
     /* ============================================================
@@ -106,11 +109,20 @@
     }
     .content {
       flex: 1;
-      padding: 18px 18px 100px;
+      min-height: 0;
+      padding: 18px 18px 24px;
       overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
     }
     .content.no-nav {
       padding-bottom: 24px;
+    }
+    .content.chat-mode {
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      min-height: 0;
+      padding-bottom: 18px;
     }
 
     /* ============================================================
@@ -635,10 +647,31 @@
     .msg-input-row textarea {
       margin-bottom: 0;
       min-height: 44px;
+      max-height: 110px;
     }
     .msg-input-row button {
       flex-shrink: 0;
       width: 70px;
+    }
+    .chat-card {
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+      min-height: 0;
+      margin-bottom: 0;
+    }
+    .chat-messages {
+      flex: 1;
+      overflow-y: auto;
+      min-height: 0;
+      padding: 2px 2px 6px;
+      -webkit-overflow-scrolling: touch;
+    }
+    .chat-input-row {
+      flex-shrink: 0;
+      margin-top: 10px;
+      padding-top: 10px;
+      border-top: 1px solid var(--border);
     }
 
     /* ============================================================
@@ -1070,6 +1103,9 @@
         ]);
       }
 
+      const isChatTab = (state.role === 'secretary' || state.role === 'doctor') && state.tab === 'messages';
+      const contentClass = 'content' + (isChatTab ? ' chat-mode' : '');
+
       app.innerHTML = `
           <div class="topbar">
             <div class="row">
@@ -1080,9 +1116,14 @@
               </div>
             </div>
           </div>
-          <div class="content">${body}</div>
+          <div class="${contentClass}">${body}</div>
           <div class="bottom-nav">${nav}</div>
         `;
+
+      if (isChatTab) {
+        const c = document.getElementById('chatMessages');
+        if (c) c.scrollTop = c.scrollHeight;
+      }
     }
 
     // ================================================================
@@ -1746,16 +1787,18 @@
       const list = getFilteredMessages().sort((a, b) => a.time - b.time);
       const otherLabel = who === 'secretary' ? 'الطبيب' : 'السكرتيرة';
       return `
-          <div class="card" style="min-height:200px;">
+          <div class="card chat-card">
             <div class="section-title">محادثة مع ${otherLabel}</div>
-            ${list.length ? list.map(m => `
-                <div class="msg-bubble msg-from-${m.sender}">
-                  ${escapeHtml(m.text)}
-                  <span class="msg-time">${new Date(m.time).toLocaleString('ar-EG', { hour: '2-digit', minute: '2-digit', day: 'numeric', month: 'short' })}</span>
-                </div>
-              `).join('') : `<div class="empty"><div class="ic">💬</div><p>لا توجد رسائل بعد</p></div>`}
-            <div class="msg-input-row">
-              <textarea id="msgInput" placeholder="اكتب رسالة..."></textarea>
+            <div class="chat-messages" id="chatMessages">
+              ${list.length ? list.map(m => `
+                  <div class="msg-bubble msg-from-${m.sender}">
+                    ${escapeHtml(m.text)}
+                    <span class="msg-time">${new Date(m.time).toLocaleString('ar-EG', { hour: '2-digit', minute: '2-digit', day: 'numeric', month: 'short' })}</span>
+                  </div>
+                `).join('') : `<div class="empty"><div class="ic">💬</div><p>لا توجد رسائل بعد</p></div>`}
+            </div>
+            <div class="msg-input-row chat-input-row">
+              <textarea id="msgInput" placeholder="اكتب رسالة..." onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendMsg('${who}');}"></textarea>
               <button class="btn btn-primary" onclick="sendMsg('${who}')">إرسال</button>
             </div>
           </div>
@@ -1778,7 +1821,7 @@
         console.error(error); return; }
       DB.messages.push(row);
       render();
-      setTimeout(() => { const c = document.querySelector('.content'); if (c) c.scrollTop = c.scrollHeight; }, 30);
+      setTimeout(() => { const c = document.getElementById('chatMessages'); if (c) c.scrollTop = c.scrollHeight; }, 30);
     }
 
     // ================================================================
